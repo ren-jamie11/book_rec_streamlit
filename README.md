@@ -1,1 +1,1 @@
-# book_rec_streamlit
+# personality_book_rec
