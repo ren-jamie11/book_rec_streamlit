@@ -124,31 +124,34 @@ def load_user_reviews_button(user_id: str, genre_labels: pd.DataFrame,
         - fiction_genres: List[str] of fiction genres
         - nonfiction_genres: List[str] of nonfiction genres
     """
+    st.write("1st step of load user reviews")
 
     if user_id.strip() == "":
             st.error("Please enter a valid user ID.")
     else:
-
+        st.write("2nd step of load user reviews")
         # refresh recs and neighbors (before user presses 'recommend' button)
         st.session_state.recommendations = pd.DataFrame(columns=rec_df_cols)
         st.session_state.neighbors = pd.DataFrame(columns = neighbor_df_cols)
 
         with st.spinner("Loading user reviews..."):
             st.session_state.user_reviews = get_user_reviews_from_cache(user_id)
+            st.write(st.session_state.user_reviews)
         
         # get genre info from user's reviews
-        temp_genre_counts, temp_genre_counts = get_user_genre_counts_and_pcts(st.session_state.user_reviews, 
+        temp_genre_counts, temp_genre_pcts = get_user_genre_counts_and_pcts(st.session_state.user_reviews, 
                                                                             genre_labels, max_value= max_genre_pct/100)
-        
+
+        st.write(temp_genre_pcts)
         # check if loaded successfully
-        if len(temp_genre_counts) > 0:
+        if len(temp_genre_pcts) > 0:
             st.session_state.load_user_status = True
         else:
             st.session_state.load_user_status = False
 
         # set sliders to user's genre values
-        user_fiction_values_dict = retrieve_genre_values_from_df(temp_genre_counts, fiction_genres)
-        user_nonfiction_values_dict = retrieve_genre_values_from_df(temp_genre_counts, nonfiction_genres)
+        user_fiction_values_dict = retrieve_genre_values_from_df(temp_genre_pcts, fiction_genres)
+        user_nonfiction_values_dict = retrieve_genre_values_from_df(temp_genre_pcts, nonfiction_genres)
 
         set_sliders(user_fiction_values_dict)
         set_sliders(user_nonfiction_values_dict)
