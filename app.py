@@ -1,10 +1,12 @@
 import streamlit as st
 import os
 
+from static import *
 from get_user_reviews import *
 from main_genre_book_recommender import *
 from user_review_cache_class import UserReviewCache
 from concurrent.futures import ThreadPoolExecutor
+
 
 st.set_page_config(page_title="User Reviews", layout="wide")
 fiction_sliders, col2, nonfiction_sliders, col4, col_recommend = st.columns([2, .5, 2, .5, 6]) 
@@ -15,7 +17,7 @@ file_paths = ["data/all_books_final.parquet",
               "data/genre_labels.parquet",
               "data/all_labeled_reviews.parquet",
               "data/compact_user_genre_pct.parquet",
-              "data/main_user_item_matrix.parquet"]
+              "data/smaller_user_item_matrix.parquet"]
 @st.cache_data
 def interface_loader(file_paths):
     """ Load parquet files needed for calculations
@@ -185,7 +187,7 @@ with col_recommend:
     genre_labels = data_dict["genre_labels.parquet"]
     all_labeled_reviews = data_dict["all_labeled_reviews.parquet"]
     compact_user_genre_pct = data_dict["compact_user_genre_pct.parquet"]
-    main_user_item_matrix = data_dict["main_user_item_matrix.parquet"]
+    smaller_user_item_matrix = data_dict["smaller_user_item_matrix.parquet"]
 
     if "user_genre_counts" not in st.session_state:
         st.session_state.user_genre_counts, st.session_state.user_genre_pct = get_user_genre_counts(data_dict["all_labeled_reviews.parquet"])
@@ -298,7 +300,7 @@ with col_recommend:
         st.session_state.recommendations, st.session_state.neighbors = recommend_books_by_custom_genre_pct(st.session_state.user_genre_stats_main, novelty_factor = novelty_factor,
                                                                 rating_emphasis = 8, user_reviews = st.session_state.user_reviews,
                                                                 user_genre_counts = user_genre_counts, other_users_genre_pct = compact_user_genre_pct,
-                                                                user_item_matrix = main_user_item_matrix, users_data = users_data, 
+                                                                user_item_matrix = smaller_user_item_matrix, users_data = users_data, 
                                                                 book_ratings = all_books_ratings, metadata = books_author_date, hide_read=st.session_state.hide_read)
 
             
