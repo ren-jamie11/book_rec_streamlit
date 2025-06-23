@@ -162,6 +162,12 @@ with col_recommend:
     st.sidebar.title("🔍 Load User Reviews")
     user_id = st.sidebar.text_input("GoodReads User ID")
 
+    # --- Persist cache between reruns ---
+    if "cache" not in st.session_state:
+        st.session_state.cache = UserReviewCache(maxsize=10)
+
+    cache = st.session_state.cache
+    
     def get_user_reviews_from_cache(user_id):
         """
         Load user's review data from GoodReads url
@@ -196,12 +202,6 @@ with col_recommend:
         st.session_state.user_genre_counts, st.session_state.user_genre_pct = get_user_genre_counts(data_dict["all_labeled_reviews.parquet"])
 
     user_genre_counts, user_genre_pct = st.session_state.user_genre_counts, st.session_state.user_genre_pct
-
-    # --- Persist cache between reruns ---
-    if "cache" not in st.session_state:
-        st.session_state.cache = UserReviewCache(maxsize=10)
-
-    cache = st.session_state.cache
 
     if 'user_reviews' not in st.session_state:
         st.session_state.user_reviews = pd.DataFrame()
