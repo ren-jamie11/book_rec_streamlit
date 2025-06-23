@@ -3,7 +3,6 @@ import numpy as np
 import streamlit as st
 
 from static import *
-from sklearn.metrics.pairwise import cosine_similarity
 from typing import List
 
 def get_user_genre_counts(reviews):
@@ -205,6 +204,9 @@ def get_user_genre_counts_and_pcts(user_reviews, genre_labels, max_value = None)
     return this_user_genre_counts, this_user_genre_pct
 
 def get_user_similarities_ranker_by_genre(this_user_genre_pct, user_genre_counts, other_users_genre_pct, alpha, min_similarity):
+    # lazy loads (to save time hopefully)
+    from sklearn.metrics.pairwise import cosine_similarity
+    
     # construct matrix
     M = other_users_genre_pct.values
     v = this_user_genre_pct.values

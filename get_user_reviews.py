@@ -1,9 +1,10 @@
 from static import headers_list
-from bs4 import BeautifulSoup
+from UserScraper import *
+
 import aiohttp
 import asyncio
 import time
-from UserScraper import *
+
 
 
 def get_review_cards_single_page(self, user_id, i):
