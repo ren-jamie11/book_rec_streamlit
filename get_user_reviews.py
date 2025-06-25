@@ -3,7 +3,7 @@ from UserScraper import *
 
 import aiohttp
 import asyncio
-import time
+
 
 
 
@@ -23,7 +23,6 @@ async def load_user_reviews_from_single_url(url, session,
                                             time_out = 3.5,
                                             attempts = 3):
     
-    start = time.time()
     attempts = max(attempts, len(headers))
     for i in range(attempts):
         try:
@@ -50,8 +49,6 @@ async def load_user_reviews_from_single_url(url, session,
             continue
 
         if len(source) > 10000:
-            end = time.time()
-            print(f"Time taken: {end - start}")
             soup = BeautifulSoup(source, "lxml")
             review_cards = soup.find_all('tr', class_ = 'bookalike review')
             return review_cards
@@ -75,14 +72,10 @@ user_profile_url = get_user_profile_url(user_id)
 
 async def main(user_id, pages = 5):
     urls = [get_user_review_page_url(user_id, i) for i in range(1, pages + 1)]
-    start = time.time()
     async with aiohttp.ClientSession() as session:
         # Schedule all fetch coroutines concurrently
         tasks = [load_user_reviews_from_single_url(url, session) for url in urls]
         results = await asyncio.gather(*tasks, return_exceptions=True)
-
-        end = time.time()
-        elapsed = end - start
 
         results = [r for r in results if not isinstance(r, Exception)]
 
@@ -101,9 +94,4 @@ def get_reviews_from_user_url(user_id):
     user_reviews = user.retrieve_reviews()
 
     return user_reviews
-
-
-
-""" Test """
-# user_reviews = get_reviews_from_user_url(user_id)
 

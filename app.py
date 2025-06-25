@@ -1,12 +1,10 @@
 import streamlit as st
-import os
 
 from static import *
 from get_user_reviews import *
 from main_genre_book_recommender_sparse import *
 from user_review_cache_class import UserReviewCache
 
-from scipy.sparse import csr_matrix
 from scipy.sparse import load_npz
 
 st.set_page_config(page_title="User Reviews", layout="wide")
@@ -35,14 +33,9 @@ all_labeled_reviews = read_parquet("data/all_labeled_reviews.parquet")
 compact_user_genre_pct = read_parquet("data/compact_user_genre_pct.parquet")
 # ------ Finished loading parquet files --------
 
-# @st.cache_data
-# def interface_loader(file_paths):
-#     data_dict = {}
-#     for path in file_paths:
-#         file_name = os.path.basename(path)
-#         df = pd.read_parquet(path)
-#         data_dict[file_name] = df
-#     return data_dict
+st.sidebar.write("")
+st.sidebar.title("🔍 Load User Reviews")
+user_id = st.sidebar.text_input("GoodReads User ID", key = 'user_id_chatbox')
 
 def genre_subtext(title, spaces = 2):
     """ Basic formatting/text function
@@ -132,8 +125,9 @@ def load_user_reviews_button(user_id: str, genre_labels: pd.DataFrame,
         - fiction_genres: List[str] of fiction genres
         - nonfiction_genres: List[str] of nonfiction genres
     """
-
-    if user_id.strip() == "":
+    # get what's in the chatbox
+    user_id_entry = st.session_state['user_id_chatbox']
+    if user_id_entry.strip() == "":
             st.error("Please enter a valid user ID.")
     else:
         # refresh recs and neighbors (before user presses 'recommend' button)
@@ -141,7 +135,7 @@ def load_user_reviews_button(user_id: str, genre_labels: pd.DataFrame,
         st.session_state.neighbors = pd.DataFrame(columns = neighbor_df_cols)
 
         with st.spinner("Loading user reviews..."):
-            st.session_state.user_reviews = get_user_reviews_from_cache(user_id)
+            st.session_state.user_reviews = get_user_reviews_from_cache(user_id_entry)
         
         # get genre info from user's reviews
         temp_genre_counts, temp_genre_pcts = get_user_genre_counts_and_pcts(st.session_state.user_reviews, 
@@ -169,14 +163,10 @@ def load_sparse_user_item_matrix(filepath = "data/user_item_sparse.npz"):
 sparse_user_item_matrix = load_sparse_user_item_matrix()
 
 with col_recommend:
-    
-    st.sidebar.write("")
-    st.sidebar.title("🔍 Load User Reviews")
-    user_id = st.sidebar.text_input("GoodReads User ID")
 
     # --- Persist cache between reruns ---
     if "cache" not in st.session_state:
-        st.session_state.cache = UserReviewCache(maxsize=10)
+        st.session_state.cache = UserReviewCache(maxsize=5)
 
     cache = st.session_state.cache
     
@@ -264,8 +254,6 @@ with col_recommend:
     st.sidebar.caption("""App may take 2 seconds to warm up
                           the first time you click 'get recommendations' """)
 
-
-
     st.title("📚 Your books")
     st.write("")
     st.write("**Recommendations**")
@@ -349,17 +337,3 @@ with data_description:
     st.caption(""" - 16,000+ books """)
     st.caption(""" - 9,500+ user profiles """)
     st.caption(""" - 475,000+ ratings""")
-
-
-
-# data_dict = interface_loader(file_paths)
-
-# all_books = data_dict["all_books_final.parquet"]
-# all_books_ratings = all_books[['title', 'rating', 'num_ratings']]
-# books_author_date = all_books[['title', 'author', 'publish_date']]
-# books_author_date = books_author_date.set_index('title')
-
-# users_data = data_dict["users_data.parquet"]
-# genre_labels = data_dict["genre_labels.parquet"]
-# all_labeled_reviews = data_dict["all_labeled_reviews.parquet"]
-# compact_user_genre_pct = data_dict["compact_user_genre_pct.parquet"]

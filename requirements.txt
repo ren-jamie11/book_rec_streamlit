@@ -5,6 +5,7 @@ requests
 pandas
 numpy
 lxml
+scipy
 
 
 https://mystreamlitapp-464013.uc.r.appspot.com
