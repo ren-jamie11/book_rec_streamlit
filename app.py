@@ -34,7 +34,7 @@ compact_user_genre_pct = read_parquet("data/compact_user_genre_pct.parquet")
 # ------ Finished loading parquet files --------
 
 st.sidebar.write("")
-st.sidebar.title("🔍 Load User Reviews")
+st.sidebar.title("🔍 Load Reviews")
 user_id = st.sidebar.text_input("GoodReads User ID", key = 'user_id_chatbox')
 
 def genre_subtext(title, spaces = 2):
@@ -210,6 +210,9 @@ with col_recommend:
 
     load_button = st.sidebar.button("Load", on_click = load_user_reviews_button, kwargs = load_user_kwargs)
 
+    st.sidebar.caption("""Use id from your ratings page (e.g. 155041466)
+                       www.goodreads.com/review/list/155041466?""")
+
     if "load_user_status" not in st.session_state:
         st.session_state.load_user_status = True
 
@@ -248,10 +251,6 @@ with col_recommend:
         )
     st.sidebar.divider()
 
-    st.sidebar.write("**Quick tip**")
-    st.sidebar.caption("""Use id from your ratings page (e.g. 155041466)
-                       www.goodreads.com/review/list/155041466?""")
-
     st.title("📚 Your books")
     st.write("")
     st.write("**Recommendations**")
@@ -270,7 +269,9 @@ with col_recommend:
     if not st.session_state.sidebar_acknowledged:
         st.write("")
         st.write("")
-        st.markdown('<span style="color: navy; font-weight: bold;">Open sidebar (top left) to start</span>', 
+        st.markdown('<span style="color: navy; font-weight: bold;">Toggle sliders to get recs</span>', 
+                    unsafe_allow_html=True)
+        st.markdown('<span style="color: navy; font-weight: bold;">Or open sidebar (top left) to try out personalities!</span>', 
                     unsafe_allow_html=True)
         st.markdown('<span style="color: navy;">Zoom out (ctrl + "-") to 75% for best experience </span>', 
                     unsafe_allow_html=True)
