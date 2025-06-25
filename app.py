@@ -7,7 +7,7 @@ from user_review_cache_class import UserReviewCache
 
 from scipy.sparse import load_npz
 
-st.set_page_config(page_title="User Reviews", layout="wide")
+st.set_page_config(page_title="Pocket Library", layout="wide")
 fiction_sliders, col2, nonfiction_sliders, col4, col_recommend = st.columns([2, .5, 2, .5, 6]) 
 
 # ------ Load parquet files! --------
