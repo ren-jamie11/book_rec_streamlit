@@ -251,9 +251,6 @@ with col_recommend:
     st.sidebar.write("**Quick tip**")
     st.sidebar.caption("""Use id from your ratings page (e.g. 155041466)
                        www.goodreads.com/review/list/155041466?""")
-    
-    st.sidebar.caption("""App may take 2 seconds to warm up
-                          the first time you click 'get recommendations' """)
 
     st.title("📚 Your books")
     st.write("")
