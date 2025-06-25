@@ -125,6 +125,7 @@ def load_user_reviews_button(user_id: str, genre_labels: pd.DataFrame,
         - fiction_genres: List[str] of fiction genres
         - nonfiction_genres: List[str] of nonfiction genres
     """
+    st.session_state.sidebar_acknowledged = True
     # get what's in the chatbox
     user_id_entry = st.session_state['user_id_chatbox']
     if user_id_entry.strip() == "":
@@ -258,10 +259,25 @@ with col_recommend:
     st.write("")
     st.write("**Recommendations**")
     mode = st.selectbox("Mode", ["Classic", "Surprise Me"])
-    fiction_sliders, col2 = st.columns([3, 1])
-    with fiction_sliders:
+    container1, container2 = st.columns([3, 1])
+    with container1:
         recommend_button = st.button("Get recommendations")
-    with col2:
+
+        # Initialize session state flag if not set
+    def acknowledge_sidebar():
+        st.session_state.sidebar_acknowledged = True
+
+    if "sidebar_acknowledged" not in st.session_state:
+        st.session_state.sidebar_acknowledged = False
+
+    if not st.session_state.sidebar_acknowledged:
+        st.write("")
+        st.write("")
+        st.markdown('<span style="color: navy; font-weight: bold;">Open sidebar (top left) to start</span>', 
+                    unsafe_allow_html=True)
+        st.button("Got it!", on_click=acknowledge_sidebar)
+
+    with container2:
         hide_read = st.checkbox("Hide Books Already Read", value=True, key="hide_read")
         
     # Mapping from mode name to novelty factor

@@ -52,7 +52,8 @@ def get_top_n_reviewers(ranker, n):
     n = min(n, len(ranker))
     print("n", n)
     top_n = ranker.head(n)
-    top_n['score_normed'] = top_n['score']/np.sum(top_n['score'])
+    # top_n['score_normed'] = top_n['score']/np.sum(top_n['score'])
+    top_n.loc[:, 'score_normed'] = top_n['score'] / np.sum(top_n['score'])
 
     return top_n
 
@@ -129,10 +130,15 @@ def enrich_books_with_metadata(recommended_books, book_ratings, metadata):
 def post_process_books(recommended_books, n):
     recommended_books = recommended_books[['author', 'publish_date', 'adjusted_score','rating', 'count', 'novelty', 'overall_rating', 'num_ratings']] 
     recommended_books.columns = ['author', 'published', 'score','rating', 'count', 'novelty', 'goodreads rating', 'ratings']
-    recommended_books['score'] = recommended_books['score'].round(1) 
-    recommended_books['rating'] = recommended_books['rating'].round(1) 
-    recommended_books['goodreads rating'] = recommended_books['goodreads rating'].round(1) 
-    recommended_books['ratings'] = format_thousands(recommended_books['ratings'])
+    # recommended_books['score'] = recommended_books['score'].round(1) 
+    recommended_books.loc[:, 'score'] = recommended_books['score'].round(1)
+    # recommended_books['rating'] = recommended_books['rating'].round(1) 
+    recommended_books.loc[:, 'rating'] = recommended_books['rating'].round(1)
+    recommended_books.loc[:, 'goodreads rating'] = recommended_books['goodreads rating'].round(1)
+    # recommended_books['goodreads rating'] = recommended_books['goodreads rating'].round(1) 
+    # recommended_books.loc[:, 'ratings'] = format_thousands(recommended_books['ratings'])
+    recommended_books['ratings'] = format_thousands(recommended_books['ratings']).astype('object')
+    # recommended_books['ratings'] = format_thousands(recommended_books['ratings'])
 
     return recommended_books.head(n).sort_values(by = 'score', ascending = False)
 
