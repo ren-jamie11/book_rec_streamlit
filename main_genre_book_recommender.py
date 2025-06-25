@@ -197,20 +197,19 @@ def get_user_genre_counts_and_pcts(user_reviews, genre_labels, max_value = None)
 
     if max_value:
         this_user_genre_pct[this_user_genre_pct.columns[0]] = this_user_genre_pct[this_user_genre_pct.columns[0]].clip(upper = max_value)
-        print("Hellooooo")
-
-    print(this_user_genre_pct)
 
     return this_user_genre_counts, this_user_genre_pct
 
-def get_user_similarities_ranker_by_genre(this_user_genre_pct, user_genre_counts, other_users_genre_pct, alpha, min_similarity):
-    # lazy loads (to save time hopefully)
-    from sklearn.metrics.pairwise import cosine_similarity
-    
+def cosine_similarity_manual(A, B):
+    A_norm = A / np.linalg.norm(A, axis=1, keepdims=True)
+    B_norm = B / np.linalg.norm(B, axis=1, keepdims=True)
+    return np.dot(A_norm, B_norm.T)
+
+def get_user_similarities_ranker_by_genre(this_user_genre_pct, user_genre_counts, other_users_genre_pct, alpha, min_similarity):    
     # construct matrix
     M = other_users_genre_pct.values
     v = this_user_genre_pct.values
-    similarities = cosine_similarity(M.T, v.T).ravel()
+    similarities = cosine_similarity_manual(M.T, v.T).ravel()
     other_users = other_users_genre_pct.T.index
     similarity_ranker = pd.DataFrame({'other_users': other_users, 'genre_similarity': similarities})
     

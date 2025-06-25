@@ -2,7 +2,9 @@ streamlit
 aiohttp
 beautifulsoup4
 requests
-scikit-learn
 pandas
 numpy
 lxml
+
+
+https://mystreamlitapp-464013.uc.r.appspot.com
