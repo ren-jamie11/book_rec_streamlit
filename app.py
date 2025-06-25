@@ -272,6 +272,8 @@ with col_recommend:
         st.write("")
         st.markdown('<span style="color: navy; font-weight: bold;">Open sidebar (top left) to start</span>', 
                     unsafe_allow_html=True)
+        st.markdown('<span style="color: navy;">Zoom out (ctrl + "-") to 75% for best experience </span>', 
+                    unsafe_allow_html=True)
         st.button("Got it!", on_click=acknowledge_sidebar)
 
     with container2:
