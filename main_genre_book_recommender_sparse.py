@@ -148,7 +148,70 @@ def post_process_neighbors(neighbors, users_data):
     
     return m_neighbors
 
-def get_recommendation_from_top(ranker, novelty_factor, rating_emphasis, user_item_matrix,
+
+def sparse_to_df(sparse_matrix, index, columns):
+
+    dense_df = pd.DataFrame(
+        sparse_matrix.toarray(), 
+        index=index,
+        columns=columns
+    )
+
+    return dense_df
+
+def get_expert_user_item_sparse(user_item_sparse, user_ids, experts):
+    """
+    Args:
+        user_item_sparse: csr_matrix, full user-item matrix
+        user_ids: list of user IDs (row index order of the sparse matrix)
+        experts: list or pd.Index of expert user IDs
+
+    Returns:
+        csr_matrix with only expert users
+    """
+    user_id_to_row = {uid: i for i, uid in enumerate(user_ids)}
+    expert_indices = [user_id_to_row[uid] for uid in experts if uid in user_id_to_row]
+    return user_item_sparse[expert_indices, :]
+
+
+def format_rating_count(book_stats, rating_emphasis):
+    book_stats = book_stats.dropna(subset=["rating"])
+    book_stats['score'] = get_score(book_stats['count'], book_stats['rating'], alpha = rating_emphasis)
+    book_stats['score'] = min_max_scale(book_stats['score']).round(1)
+    book_stats = book_stats.sort_values(by="score", ascending=False)
+    book_stats = book_stats[['score', 'rating', "count"]]
+
+    return book_stats
+
+def get_book_scores_from_experts_sparse(user_item_sparse, book_index):
+    """
+    Vectorized version: takes a CSR sparse matrix and computes per-item:
+    - mean rating (ignoring zeros)
+    - count of non-zero ratings
+    Returns a DataFrame with 'rating' and 'count' columns.
+    """
+
+    # Convert to CSC for efficient column operations
+    user_item_csc = user_item_sparse.tocsc()
+
+    # Count of non-zero ratings per column (i.e. per book)
+    rating_counts = np.diff(user_item_csc.indptr)
+
+    # Sum of all non-zero ratings per column
+    rating_sums = np.asarray(user_item_csc.sum(axis=0)).ravel()
+
+    # Avoid division by zero
+    with np.errstate(divide='ignore', invalid='ignore'):
+        avg_ratings = np.true_divide(rating_sums, rating_counts)
+        avg_ratings[np.isnan(avg_ratings)] = 0.0  # for columns with 0 ratings
+
+    return pd.DataFrame({
+        "rating": avg_ratings,
+        "count": rating_counts
+    }, index = book_index)
+
+
+def get_recommendation_from_top(ranker, novelty_factor, rating_emphasis, sparse_user_item_matrix,
                                 users_data, book_ratings, metadata,
                                 num_reviewers = 100, min_similarity = 0.8):
     
@@ -157,9 +220,14 @@ def get_recommendation_from_top(ranker, novelty_factor, rating_emphasis, user_it
     experts = top_n.index
     neighbors = post_process_neighbors(top_n.head(num_reviewers), users_data = users_data)
     
-    """ Changing this to sparse implementation!"""
-    expert_user_item_matrix = get_expert_user_item_matrix(user_item_matrix, experts)
-    expert_ratings = get_book_scores_from_experts(expert_user_item_matrix, rating_emphasis)
+    """ New Implementation"""
+    expert_user_item_matrix_sparse = get_expert_user_item_sparse(sparse_user_item_matrix, user_ids, experts)
+    expert_ratings = get_book_scores_from_experts_sparse(expert_user_item_matrix_sparse, book_index = book_list)
+    expert_ratings = format_rating_count(expert_ratings, rating_emphasis = rating_emphasis)
+
+    # """ Changing this to sparse implementation!"""
+    # expert_user_item_matrix = get_expert_user_item_matrix(user_item_matrix, experts)
+    # expert_ratings = get_book_scores_from_experts(expert_user_item_matrix, rating_emphasis)
 
     rec_books_with_metadata = enrich_books_with_metadata(expert_ratings, book_ratings, metadata)
 
@@ -227,13 +295,13 @@ def get_user_similarities_ranker_by_genre(this_user_genre_pct, user_genre_counts
 """ USE THIS FOR CUSTOME GENRE PCT"""
 def recommend_books_by_custom_genre_pct(custom_user_genre_pct, novelty_factor, rating_emphasis,
                                         user_genre_counts, other_users_genre_pct,
-                                        user_item_matrix, users_data, book_ratings,
+                                        sparse_user_item_matrix, users_data, book_ratings,
                                         metadata, hide_read, user_reviews = None):
 
     genre_similarity_ranker = get_user_similarities_ranker_by_genre(custom_user_genre_pct, user_genre_counts, other_users_genre_pct,
                                                                     alpha = 250, min_similarity = 0.8)
     
-    recommended_books, neighbors = get_recommendation_from_top(genre_similarity_ranker, novelty_factor, rating_emphasis, user_item_matrix,
+    recommended_books, neighbors = get_recommendation_from_top(genre_similarity_ranker, novelty_factor, rating_emphasis, sparse_user_item_matrix,
                                                                users_data, book_ratings, metadata)
     
     """ (add a toggle maybe!!! up to them)"""

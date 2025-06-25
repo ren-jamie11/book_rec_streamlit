@@ -3,47 +3,46 @@ import os
 
 from static import *
 from get_user_reviews import *
-from main_genre_book_recommender import *
+from main_genre_book_recommender_sparse import *
 from user_review_cache_class import UserReviewCache
-from concurrent.futures import ThreadPoolExecutor
 
+from scipy.sparse import csr_matrix
+from scipy.sparse import load_npz
 
 st.set_page_config(page_title="User Reviews", layout="wide")
 fiction_sliders, col2, nonfiction_sliders, col4, col_recommend = st.columns([2, .5, 2, .5, 6]) 
 
-# Preloaded parquet files (for calculations)
+# ------ Load parquet files! --------
 file_paths = ["data/all_books_final.parquet",
               "data/users_data.parquet",
               "data/genre_labels.parquet",
               "data/all_labeled_reviews.parquet",
-              "data/compact_user_genre_pct.parquet",
-              "data/smaller_user_item_matrix.parquet"]
-# @st.cache_data
-# def interface_loader(file_paths):
-#     """ Load parquet files needed for calculations
-#         Loads into st.st.session_state.data_dict
-#         (only required 1st time)
-#     """
-#     def load_file(path):
-#         file_name = os.path.basename(path)
-#         df = pd.read_parquet(path)
-#         return file_name, df
-
-#     data_dict = {}
-#     with ThreadPoolExecutor() as executor:
-#         results = executor.map(load_file, file_paths)
-#         for name, df in results:
-#             data_dict[name] = df
-#     return data_dict
+              "data/compact_user_genre_pct.parquet"]
 
 @st.cache_data
-def interface_loader(file_paths):
-    data_dict = {}
-    for path in file_paths:
-        file_name = os.path.basename(path)
-        df = pd.read_parquet(path)
-        data_dict[file_name] = df
-    return data_dict
+def read_parquet(file_path):
+    df = pd.read_parquet(file_path)
+    return df
+
+all_books = read_parquet("data/all_books_final.parquet")
+all_books_ratings = all_books[['title', 'rating', 'num_ratings']]
+books_author_date = all_books[['title', 'author', 'publish_date']]
+books_author_date = books_author_date.set_index('title')
+
+users_data = read_parquet("data/users_data.parquet")
+genre_labels = read_parquet("data/genre_labels.parquet")
+all_labeled_reviews = read_parquet("data/all_labeled_reviews.parquet")
+compact_user_genre_pct = read_parquet("data/compact_user_genre_pct.parquet")
+# ------ Finished loading parquet files --------
+
+# @st.cache_data
+# def interface_loader(file_paths):
+#     data_dict = {}
+#     for path in file_paths:
+#         file_name = os.path.basename(path)
+#         df = pd.read_parquet(path)
+#         data_dict[file_name] = df
+#     return data_dict
 
 def genre_subtext(title, spaces = 2):
     """ Basic formatting/text function
@@ -161,6 +160,14 @@ def load_user_reviews_button(user_id: str, genre_labels: pd.DataFrame,
         set_sliders(user_fiction_values_dict)
         set_sliders(user_nonfiction_values_dict)
 
+@st.cache_data
+def load_sparse_user_item_matrix(filepath = "data/user_item_sparse.npz"):
+    loaded_sparse = load_npz(filepath)
+    return loaded_sparse
+
+# Sparse user item matrix
+sparse_user_item_matrix = load_sparse_user_item_matrix()
+
 with col_recommend:
     
     st.sidebar.write("")
@@ -187,31 +194,14 @@ with col_recommend:
         cache.set(user_id, user_reviews)
         return user_reviews
 
-    # if "data_dict" not in st.session_state: 
-    #     st.session_state.data_dict = interface_loader(file_paths)
-
-    # data_dict = st.session_state.data_dict
-    data_dict = interface_loader(file_paths)
-
-    all_books = data_dict["all_books_final.parquet"]
-    all_books_ratings = all_books[['title', 'rating', 'num_ratings']]
-    books_author_date = all_books[['title', 'author', 'publish_date']]
-    books_author_date = books_author_date.set_index('title')
-
-    users_data = data_dict["users_data.parquet"]
-    genre_labels = data_dict["genre_labels.parquet"]
-    all_labeled_reviews = data_dict["all_labeled_reviews.parquet"]
-    compact_user_genre_pct = data_dict["compact_user_genre_pct.parquet"]
-    smaller_user_item_matrix = data_dict["smaller_user_item_matrix.parquet"]
-
+    # Takes up a lot of RAM!!
     if "user_genre_counts" not in st.session_state:
-        st.session_state.user_genre_counts, st.session_state.user_genre_pct = get_user_genre_counts(data_dict["all_labeled_reviews.parquet"])
+        st.session_state.user_genre_counts, st.session_state.user_genre_pct = get_user_genre_counts(all_labeled_reviews)
 
     user_genre_counts, user_genre_pct = st.session_state.user_genre_counts, st.session_state.user_genre_pct
 
     if 'user_reviews' not in st.session_state:
         st.session_state.user_reviews = pd.DataFrame()
-        # st.write(st.session_state.user_reviews)
 
     # Genre info (what recommender uses as primary input)
     if "user_genre_stats_main" not in st.session_state:
@@ -309,7 +299,7 @@ with col_recommend:
         st.session_state.recommendations, st.session_state.neighbors = recommend_books_by_custom_genre_pct(st.session_state.user_genre_stats_main, novelty_factor = novelty_factor,
                                                                 rating_emphasis = 8, user_reviews = st.session_state.user_reviews,
                                                                 user_genre_counts = user_genre_counts, other_users_genre_pct = compact_user_genre_pct,
-                                                                user_item_matrix = smaller_user_item_matrix, users_data = users_data, 
+                                                                sparse_user_item_matrix = sparse_user_item_matrix, users_data = users_data, 
                                                                 book_ratings = all_books_ratings, metadata = books_author_date, hide_read=st.session_state.hide_read)
 
             
@@ -359,3 +349,17 @@ with data_description:
     st.caption(""" - 16,000+ books """)
     st.caption(""" - 9,500+ user profiles """)
     st.caption(""" - 475,000+ ratings""")
+
+
+
+# data_dict = interface_loader(file_paths)
+
+# all_books = data_dict["all_books_final.parquet"]
+# all_books_ratings = all_books[['title', 'rating', 'num_ratings']]
+# books_author_date = all_books[['title', 'author', 'publish_date']]
+# books_author_date = books_author_date.set_index('title')
+
+# users_data = data_dict["users_data.parquet"]
+# genre_labels = data_dict["genre_labels.parquet"]
+# all_labeled_reviews = data_dict["all_labeled_reviews.parquet"]
+# compact_user_genre_pct = data_dict["compact_user_genre_pct.parquet"]
