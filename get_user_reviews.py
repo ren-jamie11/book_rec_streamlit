@@ -28,13 +28,6 @@ async def load_user_reviews_from_single_url(url, session,
         try:
             async with session.get(url, headers = headers[i], timeout = time_out) as response:
 
-                # if i == 0:
-                #     async def fake_text():
-                #         await asyncio.sleep(10)
-                #         return "<html>should never return</html>"
-                #     response.text = fake_text  # override method
-                # last attempt can take longer
-
                 if i < attempts - 1:
                     source = await asyncio.wait_for(response.text(), timeout=time_out)
                 else:
@@ -70,7 +63,7 @@ page = 1
 user_profile_url = get_user_profile_url(user_id)
 
 
-async def main(user_id, pages = 5):
+async def main(user_id, pages = 10):
     urls = [get_user_review_page_url(user_id, i) for i in range(1, pages + 1)]
     async with aiohttp.ClientSession() as session:
         # Schedule all fetch coroutines concurrently

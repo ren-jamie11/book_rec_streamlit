@@ -111,7 +111,7 @@ with nonfiction_sliders:
 fiction_values = [st.session_state[g]/100 for g in fiction_genres]
 nonfiction_values = [st.session_state[g]/100 for g in nonfiction_genres]
 
-def load_user_reviews_button(user_id: str, genre_labels: pd.DataFrame, 
+def load_user_reviews_button(genre_labels: pd.DataFrame, 
                              fiction_genres: List[str], nonfiction_genres: List[str]):
     """
     - Loads user reviews from GoodReads website
@@ -202,7 +202,6 @@ with col_recommend:
         st.session_state.neighbors = pd.DataFrame()
 
     load_user_kwargs = {
-        "user_id": user_id, 
         "genre_labels": genre_labels,
         "fiction_genres": fiction_genres, 
         "nonfiction_genres": nonfiction_genres
@@ -259,7 +258,9 @@ with col_recommend:
     with container1:
         recommend_button = st.button("Get recommendations")
 
-        # Initialize session state flag if not set
+    with container2:
+        hide_read = st.checkbox("Hide Books Already Read", value=True, key="hide_read")
+
     def acknowledge_sidebar():
         st.session_state.sidebar_acknowledged = True
 
@@ -269,16 +270,17 @@ with col_recommend:
     if not st.session_state.sidebar_acknowledged:
         st.write("")
         st.write("")
-        st.markdown('<span style="color: navy; font-weight: bold;">Toggle sliders to get recs</span>', 
-                    unsafe_allow_html=True)
-        st.markdown('<span style="color: navy; font-weight: bold;">Or open sidebar (top left) to try out personalities!</span>', 
-                    unsafe_allow_html=True)
+        st.markdown(
+            '<span style="color: navy; font-weight: bold;">'
+            'Toggle sliders to get recs, '
+            'or open sidebar (top left) to try out personalities!'
+            '</span>',
+            unsafe_allow_html=True
+        )
+
         st.markdown('<span style="color: navy;">Zoom out (ctrl + "-") to 75% for best experience </span>', 
                     unsafe_allow_html=True)
         st.button("Got it!", on_click=acknowledge_sidebar)
-
-    with container2:
-        hide_read = st.checkbox("Hide Books Already Read", value=True, key="hide_read")
         
     # Mapping from mode name to novelty factor
     mode_to_novelty = {

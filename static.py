@@ -112,41 +112,68 @@ lex_genre_dict = {'Classics': 25,
  'Science': 2, 
  'Self Help': 35}
 
-fantasy_girl_dict ={
-"Classics":3,
-"Contemporary":22,
-"Fantasy":50,
-"Historical Fiction":25,
-"Horror":0,
-"Mystery":12,
-"Romance":35,
-"Science Fiction":6,
-"Young Adult":50,
+suki_dict ={
+"Classics":6,
+"Contemporary":50,
+"Fantasy":34,
+"Historical Fiction":20,
+"Horror":6,
+"Mystery":20,
+"Romance":50,
+"Science Fiction":2,
+"Young Adult":45,
 "Art":0,
-"Biography":3,
+"Biography":0,
 "Business":0,
 "History":0,
-"Music":3,
+"Music":0,
 "Philosophy":0,
-"Psychology":3,
+"Psychology":0,
 "Science":0,
-"Self Help":3
+"Self Help":0,
 }
 
+
+bobby_dict = {
+"Classics":1,
+"Contemporary":7,
+"Fantasy":4,
+"Historical Fiction":6,
+"Horror":0,
+"Mystery":0,
+"Romance":4,
+"Science Fiction":3,
+"Young Adult":3,
+"Art":0,
+"Biography":21,
+"Business":28,
+"History":42,
+"Music":0,
+"Philosophy":15,
+"Psychology":24,
+"Science":46,
+"Self Help":13
+}
+
+
+
 profiles = {
-    "Lex Fridman": "Deeply curious... always asking the big questions in life.",
-    "Aria": "Soft-spoken but adventurous girl with a wild imagination",
+    "Lex Fridman: Scientist": "Deeply curious... always asking the big questions in life.",
+    "Suki: Avatar": "Cute and fearsome heroine from the Kyoshi island",
+    "Bobby Axelrod: Billions": "A ruthlessly brilliant but hot-tempered Wall Street fund manager"
 }
 
 # Corresponding image paths (replace with actual paths later)
 profile_images = {
-    "Lex Fridman": "images/lex.png",
-    "Aria": "images/aria.png",
+    "Lex Fridman: Scientist": "images/lex.png",
+    "Suki: Avatar": "images/suki.png",
+    "Bobby Axelrod: Billions": "images/bobby.png"
 }
 
 profile_dicts ={
-    "Lex Fridman": lex_genre_dict,
-    "Aria": fantasy_girl_dict
+    "Lex Fridman: Scientist": lex_genre_dict,
+    "Suki: Avatar": suki_dict,
+    "Bobby Axelrod: Billions": bobby_dict
 }
 
 empty_genre_dict = {g:0 for g in fiction_genres + nonfiction_genres}
