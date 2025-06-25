@@ -18,22 +18,31 @@ file_paths = ["data/all_books_final.parquet",
               "data/all_labeled_reviews.parquet",
               "data/compact_user_genre_pct.parquet",
               "data/smaller_user_item_matrix.parquet"]
+# @st.cache_data
+# def interface_loader(file_paths):
+#     """ Load parquet files needed for calculations
+#         Loads into st.st.session_state.data_dict
+#         (only required 1st time)
+#     """
+#     def load_file(path):
+#         file_name = os.path.basename(path)
+#         df = pd.read_parquet(path)
+#         return file_name, df
+
+#     data_dict = {}
+#     with ThreadPoolExecutor() as executor:
+#         results = executor.map(load_file, file_paths)
+#         for name, df in results:
+#             data_dict[name] = df
+#     return data_dict
+
 @st.cache_data
 def interface_loader(file_paths):
-    """ Load parquet files needed for calculations
-        Loads into st.st.session_state.data_dict
-        (only required 1st time)
-    """
-    def load_file(path):
+    data_dict = {}
+    for path in file_paths:
         file_name = os.path.basename(path)
         df = pd.read_parquet(path)
-        return file_name, df
-
-    data_dict = {}
-    with ThreadPoolExecutor() as executor:
-        results = executor.map(load_file, file_paths)
-        for name, df in results:
-            data_dict[name] = df
+        data_dict[file_name] = df
     return data_dict
 
 def genre_subtext(title, spaces = 2):
@@ -178,10 +187,11 @@ with col_recommend:
         cache.set(user_id, user_reviews)
         return user_reviews
 
-    if "data_dict" not in st.session_state: 
-        st.session_state.data_dict = interface_loader(file_paths)
+    # if "data_dict" not in st.session_state: 
+    #     st.session_state.data_dict = interface_loader(file_paths)
 
-    data_dict = st.session_state.data_dict
+    # data_dict = st.session_state.data_dict
+    data_dict = interface_loader(file_paths)
 
     all_books = data_dict["all_books_final.parquet"]
     all_books_ratings = all_books[['title', 'rating', 'num_ratings']]
