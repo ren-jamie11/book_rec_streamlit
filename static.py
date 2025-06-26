@@ -202,26 +202,27 @@ coach_carter_dict = {
 profiles = {
     "Lex Fridman: Scientist": "Deeply curious... always asking the big questions in life.",
     "Suki: Avatar": "Cute and fearsome heroine from the Kyoshi island",
+    "Coach Carter": "A tough but deeply nurturing mentor and father figure",
     "Bobby Axelrod: Billions": "A ruthlessly calculating Wall Street fund manager",
     "Beth Harmon: Queen's Gambit": "A chess prodigy with a brilliant but troubled mind",
-    "Coach Carter": "A tough but deeply nurturing mentor and father figure"
+    
 }
 
 # Corresponding image paths (replace with actual paths later)
 profile_images = {
     "Lex Fridman: Scientist": "images/lex.png",
     "Suki: Avatar": "images/suki.png",
+    "Coach Carter": "images/coach.png",
     "Bobby Axelrod: Billions": "images/bobby.png",
-    "Beth Harmon: Queen's Gambit": "images/beth2.png",
-    "Coach Carter": "images/coach.png"
+    "Beth Harmon: Queen's Gambit": "images/beth2.png"
 }
 
 profile_dicts ={
     "Lex Fridman: Scientist": lex_genre_dict,
     "Suki: Avatar": suki_dict,
+    "Coach Carter": coach_carter_dict,
     "Bobby Axelrod: Billions": bobby_dict,
-    "Beth Harmon: Queen's Gambit": beth_harmon_dict,
-    "Coach Carter": coach_carter_dict
+    "Beth Harmon: Queen's Gambit": beth_harmon_dict
 }
 
 empty_genre_dict = {g:0 for g in fiction_genres + nonfiction_genres}
