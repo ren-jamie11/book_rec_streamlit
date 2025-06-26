@@ -178,11 +178,33 @@ beth_harmon_dict = {
 }
 
 
+coach_carter_dict = { 
+    "Classics": 10,            # He respects tradition and foundational values
+    "Contemporary": 40,        # Lives in a modern world with relevant social themes
+    "Fantasy": 0,              # Very grounded, real-world character
+    "Historical Fiction": 2,   # Story reflects real social struggles but isn't period-based
+    "Horror": 0,               # No connection
+    "Mystery": 0,              # Clear and direct personality
+    "Romance": 10,             # Light family/relationship themes but not central
+    "Science Fiction": 0,      # Not relevant at all
+    "Young Adult": 0,         # Mentoring teens is central to his character
+    "Art": 6,                  # Slight appreciation—sports can be seen as artful
+    "Biography": 48,           # Based on a real person; deeply inspiring life
+    "Business": 37,            # Teaches responsibility, contracts, discipline—business mindset
+    "History": 44,             # Connects to ongoing racial and societal history
+    "Music": 8,               # Background element in culture and environment
+    "Philosophy": 33,          # Strong personal code of ethics and discipline
+    "Psychology": 40,          # Deeply understands and influences young minds
+    "Science": 0,              # Not part of his world
+    "Self Help": 45,           # Personal development and accountability are his core themes
+}
+
 profiles = {
     "Lex Fridman: Scientist": "Deeply curious... always asking the big questions in life.",
     "Suki: Avatar": "Cute and fearsome heroine from the Kyoshi island",
     "Bobby Axelrod: Billions": "A ruthlessly calculating Wall Street fund manager",
-    "Beth Harmon: Queen's Gambit": "A chess prodigy with a brilliant but troubled mind"
+    "Beth Harmon: Queen's Gambit": "A chess prodigy with a brilliant but troubled mind",
+    "Coach Carter": "A tough but deeply nurturing mentor and father figure"
 }
 
 # Corresponding image paths (replace with actual paths later)
@@ -190,14 +212,16 @@ profile_images = {
     "Lex Fridman: Scientist": "images/lex.png",
     "Suki: Avatar": "images/suki.png",
     "Bobby Axelrod: Billions": "images/bobby.png",
-    "Beth Harmon: Queen's Gambit": "images/beth2.png"
+    "Beth Harmon: Queen's Gambit": "images/beth2.png",
+    "Coach Carter": "images/coach.png"
 }
 
 profile_dicts ={
     "Lex Fridman: Scientist": lex_genre_dict,
     "Suki: Avatar": suki_dict,
     "Bobby Axelrod: Billions": bobby_dict,
-    "Beth Harmon: Queen's Gambit": beth_harmon_dict
+    "Beth Harmon: Queen's Gambit": beth_harmon_dict,
+    "Coach Carter": coach_carter_dict
 }
 
 empty_genre_dict = {g:0 for g in fiction_genres + nonfiction_genres}
