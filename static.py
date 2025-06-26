@@ -156,24 +156,48 @@ bobby_dict = {
 }
 
 
+beth_harmon_dict = { 
+    "Classics": 20,           # She's chess-obsessed and often reads older texts
+    "Contemporary": 45,       # Her internal world is very modern/emotional
+    "Fantasy": 15,            # The ceiling chessboard is her personal fantasy realm
+    "Historical Fiction": 30, # Set in the 60s; period themes matter
+    "Horror": 10,             # Her addiction and trauma add a psychological edge
+    "Mystery": 40,            # She’s enigmatic and surrounded by personal mystery
+    "Romance": 25,            # Romance exists, but it’s complicated and backgrounded
+    "Science Fiction": 5,     # Not a strong connection
+    "Young Adult": 40,        # Coming-of-age journey with intense self-discovery
+    "Art": 10,                # Chess is her art; she’s elegant and expressive
+    "Biography": 35,          # She *is* a character you'd read a biography about
+    "Business": 5,            # Minimal relevance, but she does think tactically
+    "History": 20,            # Contextually relevant, especially Cold War tension
+    "Music": 10,              # Music accompanies her internal mood
+    "Philosophy": 25,         # She questions identity, purpose, genius
+    "Psychology": 45,         # Huge theme: trauma, addiction, orphanhood
+    "Science": 5,             # Light relevance, more analytical than scientific
+    "Self Help": 10,          # There’s an underlying theme of personal growth
+}
+
 
 profiles = {
     "Lex Fridman: Scientist": "Deeply curious... always asking the big questions in life.",
     "Suki: Avatar": "Cute and fearsome heroine from the Kyoshi island",
-    "Bobby Axelrod: Billions": "A ruthlessly brilliant but hot-tempered Wall Street fund manager"
+    "Bobby Axelrod: Billions": "A ruthlessly calculating Wall Street fund manager",
+    "Beth Harmon: Queen's Gambit": "A chess prodigy with a brilliant but troubled mind"
 }
 
 # Corresponding image paths (replace with actual paths later)
 profile_images = {
     "Lex Fridman: Scientist": "images/lex.png",
     "Suki: Avatar": "images/suki.png",
-    "Bobby Axelrod: Billions": "images/bobby.png"
+    "Bobby Axelrod: Billions": "images/bobby.png",
+    "Beth Harmon: Queen's Gambit": "images/beth2.png"
 }
 
 profile_dicts ={
     "Lex Fridman: Scientist": lex_genre_dict,
     "Suki: Avatar": suki_dict,
-    "Bobby Axelrod: Billions": bobby_dict
+    "Bobby Axelrod: Billions": bobby_dict,
+    "Beth Harmon: Queen's Gambit": beth_harmon_dict
 }
 
 empty_genre_dict = {g:0 for g in fiction_genres + nonfiction_genres}
